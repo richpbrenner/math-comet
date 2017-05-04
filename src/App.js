@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import ReactTooltip from 'react-tooltip';
 import logo from './logo.svg';
 import './App.css';
-
+import {Tutorial} from './tutorial.js';
 
 function Submit(props) {
   return (
@@ -10,6 +11,7 @@ function Submit(props) {
 }
 
 function DifficultyButton(props) {
+  const difficultyName = props.difficulty.toUpperCase();
   let classes = "SettingsButton";
   if (!props.isActive) {
   classes += " Inactive"
@@ -19,17 +21,18 @@ function DifficultyButton(props) {
   }
   }
   return (
-    <button className={classes} onClick={props.onClick}>{props.difficulty}</button>
+    <button className={classes} onClick={props.onClick}>{difficultyName}</button>
   );
 }
 
 function OperationButton(props) {
+  const operationName = props.operationName.toUpperCase();
   let classes = "SettingsButton";
   if (props.isActive) {
     classes += " Selected"
   }
   return (
-    <button className={classes} onClick={props.onClick}>{props.operationName}</button>
+    <button className={classes} onClick={props.onClick}>{operationName}</button>
   );
 }
 
@@ -103,6 +106,14 @@ function Footer(props) {
   );
 }
 
+function Expression({ firstFactor, firstFactorRadix, operationSymbol, secondFactor, secondFactorRadix }) {
+  return (
+    <div className="Expression">{firstFactor}<sub>{firstFactorRadix}</sub>{" " + operationSymbol + " " + secondFactor}
+      <sub>{secondFactorRadix}</sub>
+    </div>
+  );
+}
+
 class App extends Component {
 
   constructor(props) {
@@ -125,6 +136,8 @@ class App extends Component {
       allowDifferentFactorRadix: false,
       allowDifferentAnswerRadix: false,
       showAdvancedOptions: false,
+      tutorialPageNumber: 0,
+      showTutorial: true,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -330,6 +343,10 @@ class App extends Component {
     this.setState(prevState => ({allowDifferentAnswerRadix: !prevState.allowDifferentAnswerRadix}));
   }
 
+  toggleShowTutorial = () => {
+    this.setState(prevState => ({showTutorial: !prevState.showTutorial}));
+  }
+
   changeOperation = (index) => {
     let newAllowedOperations = this.state.allowedOperations.slice();
     //if the operation being toggled, is the only true value in the array, 
@@ -397,9 +414,8 @@ class App extends Component {
 
     return (
       <div className="App">
-        <div className="Expression">{firstFactorConverted}<sub>{firstFactorRadix.representation}</sub>{" " + operationSymbol + " " + secondFactorConverted}
-          <sub>{secondFactorRadix.representation}</sub>
-        </div>
+        <Expression firstFactor={firstFactorConverted} firstFactorRadix={firstFactorRadix.representation} operationSymbol={operationSymbol}
+         secondFactor={secondFactorConverted} secondFactorRadix={secondFactorRadix.representation} />
         <form onSubmit={this.handleSubmit}>
           <div className="FormRow">
           <FeedbackIcon icon={"clear"} visible={this.state.showIncorrect} />
@@ -437,6 +453,7 @@ class App extends Component {
           {advancedOptions}
         </div>
         <Footer />
+        {this.state.showTutorial && <Tutorial onClick={() => this.toggleShowTutorial()} />}
       </div>
     );
   }
