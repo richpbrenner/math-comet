@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
 import logo from './logo.svg';
 import './App.css';
 import {Tutorial} from './tutorial.js';
